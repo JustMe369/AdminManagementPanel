@@ -40,6 +40,14 @@ user_manager = UserManager(app.config)
 from device_tracker import DeviceTracker
 device_tracker = DeviceTracker(app.config)
 
+# Import and initialize cloud sync manager
+from cloud_sync import CloudSyncManager
+cloud_sync_manager = CloudSyncManager(app.config)
+
+# Import and initialize cloud sync scheduler
+from cloud_sync_scheduler import CloudSyncScheduler
+cloud_sync_scheduler = CloudSyncScheduler(app.config)
+
 # Database path
 DB_PATH = os.path.join(os.path.dirname(__file__), 'admin_management.db')
 
@@ -675,24 +683,121 @@ def get_device_summary():
 @app.route('/api/sync/push', methods=['POST'])
 @require_auth(roles=['Admin'])
 def push_to_cloud():
-    # This would implement the cloud synchronization logic
-    # For now, we'll just return a mock response
-    return jsonify({
-        'status': 'success',
-        'message': 'Data pushed to cloud successfully',
-        'timestamp': datetime.now().isoformat()
-    })
+    """Push local data to cloud"""
+    try:
+        current_user = request.current_user
+        result = cloud_sync_manager.push_to_cloud(current_user)
+        
+        if 'error' in result:
+            return jsonify({'error': result['error']}), 400
+        
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Error in push_to_cloud endpoint: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
 
-@app.route('/api/sync/pull', methods=['GET'])
+@app.route('/api/sync/pull', methods=['POST'])
 @require_auth(roles=['Admin'])
 def pull_from_cloud():
-    # This would implement the cloud synchronization logic
-    # For now, we'll just return a mock response
-    return jsonify({
-        'status': 'success',
-        'message': 'Data pulled from cloud successfully',
-        'timestamp': datetime.now().isoformat()
-    })
+    """Pull data from cloud to local database"""
+    try:
+        current_user = request.current_user
+        result = cloud_sync_manager.pull_from_cloud(current_user)
+        
+        if 'error' in result:
+            return jsonify({'error': result['error']}), 400
+        
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Error in pull_from_cloud endpoint: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@app.route('/api/sync/status', methods=['GET'])
+@require_auth(roles=['Admin', 'NetworkManager'])
+def get_sync_status():
+    """Get synchronization status"""
+    try:
+        current_user = request.current_user
+        result = cloud_sync_manager.get_sync_status(current_user)
+        
+        if 'error' in result:
+            return jsonify({'error': result['error']}), 400
+        
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Error in get_sync_status endpoint: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+# Cloud Sync Scheduler Management
+@app.route('/api/sync/scheduler/start', methods=['POST'])
+@require_auth(roles=['Admin'])
+def start_sync_scheduler():
+    """Start the cloud sync scheduler"""
+    try:
+        result = cloud_sync_scheduler.start()
+        if result:
+            return jsonify({
+                'status': 'success',
+                'message': 'Cloud sync scheduler started successfully'
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': 'Failed to start cloud sync scheduler'
+            }), 500
+    except Exception as e:
+        logger.error(f"Error starting sync scheduler: {e}")
+        return jsonify({'error': 'Failed to start sync scheduler'}), 500
+
+@app.route('/api/sync/scheduler/stop', methods=['POST'])
+@require_auth(roles=['Admin'])
+def stop_sync_scheduler():
+    """Stop the cloud sync scheduler"""
+    try:
+        result = cloud_sync_scheduler.stop()
+        if result:
+            return jsonify({
+                'status': 'success',
+                'message': 'Cloud sync scheduler stopped successfully'
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': 'Failed to stop cloud sync scheduler'
+            }), 500
+    except Exception as e:
+        logger.error(f"Error stopping sync scheduler: {e}")
+        return jsonify({'error': 'Failed to stop sync scheduler'}), 500
+
+@app.route('/api/sync/scheduler/status', methods=['GET'])
+@require_auth(roles=['Admin', 'NetworkManager'])
+def get_scheduler_status():
+    """Get the status of the cloud sync scheduler"""
+    try:
+        status = cloud_sync_scheduler.get_status()
+        return jsonify(status)
+    except Exception as e:
+        logger.error(f"Error getting scheduler status: {e}")
+        return jsonify({'error': 'Failed to get scheduler status'}), 500
+
+@app.route('/api/sync/scheduler/force-sync', methods=['POST'])
+@require_auth(roles=['Admin'])
+def force_sync():
+    """Force an immediate synchronization"""
+    try:
+        data = request.get_json() or {}
+        sync_type = data.get('type', 'both')  # 'push', 'pull', or 'both'
+        
+        if sync_type not in ['push', 'pull', 'both']:
+            return jsonify({
+                'error': 'Invalid sync type. Must be push, pull, or both'
+            }), 400
+        
+        result = cloud_sync_scheduler.force_sync(sync_type)
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Error in force sync: {e}")
+        return jsonify({'error': 'Failed to force sync'}), 500
 
 # Device monitoring service endpoints
 @app.route('/api/device-monitoring/start', methods=['POST'])

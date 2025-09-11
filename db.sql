@@ -66,6 +66,17 @@ CREATE TABLE IF NOT EXISTS device_bandwidth (
     FOREIGN KEY (device_id) REFERENCES devices (id)
 );
 
+-- Sync status table for cloud synchronization
+CREATE TABLE IF NOT EXISTS sync_status (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sync_type TEXT NOT NULL,
+    branch_id INTEGER NOT NULL,
+    last_sync TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    UNIQUE(sync_type, branch_id),
+    FOREIGN KEY (branch_id) REFERENCES branches(id)
+);
+
 -- Add indexes for device tables
 CREATE INDEX IF NOT EXISTS idx_devices_mac ON devices(mac_address);
 CREATE INDEX IF NOT EXISTS idx_devices_branch ON devices(branch_id);
@@ -74,3 +85,5 @@ CREATE INDEX IF NOT EXISTS idx_device_activity_device ON device_activity(device_
 CREATE INDEX IF NOT EXISTS idx_device_activity_timestamp ON device_activity(timestamp);
 CREATE INDEX IF NOT EXISTS idx_device_bandwidth_device ON device_bandwidth(device_id);
 CREATE INDEX IF NOT EXISTS idx_device_bandwidth_timestamp ON device_bandwidth(timestamp);
+CREATE INDEX IF NOT EXISTS idx_sync_status_branch ON sync_status(branch_id);
+CREATE INDEX IF NOT EXISTS idx_sync_status_type ON sync_status(sync_type);
