@@ -14,6 +14,8 @@ from db_config import get_db_connection
 from error_handling import register_error_handlers, logger
 from validation import validate_json, USER_SCHEMA
 from caching import cached_response
+from firewall_controller import FirewallController
+from branch_manager import BranchManager
 from ai_network_optimizer import AINetworkOptimizer
 from automated_incident_response import AutomatedIncidentResponse
 from cross_branch_analytics import CrossBranchAnalytics
@@ -29,6 +31,7 @@ register_error_handlers(app)
 
 # Initialize components
 firewall_controller = FirewallController(app.config)
+branch_manager = BranchManager(app.config)
 network_optimizer = AINetworkOptimizer()
 incident_response = AutomatedIncidentResponse()
 branch_analytics = CrossBranchAnalytics()

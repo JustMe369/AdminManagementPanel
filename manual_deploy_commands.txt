@@ -1,0 +1,81 @@
+# Manual Deployment Commands for AdminManagement System
+# Copy and paste these commands step by step
+
+# ============================================
+# STEP 1: SSH into your router
+# ============================================
+ssh root@192.168.1.1
+
+# ============================================
+# STEP 2: Create directories and install dependencies
+# ============================================
+mkdir -p /root/AdminManagementPanel
+cd /root/AdminManagementPanel
+
+# Update packages
+opkg update
+
+# Install required packages
+opkg install python3 python3-pip curl wget
+
+# Install Python packages (this will take time)
+pip3 install Flask Jinja2
+
+# ============================================
+# STEP 3: Create the main backend file
+# ============================================
+cat > simple_main_backend.py << 'EOF'
+# [CONTENT WILL BE INSERTED HERE]
+EOF
+
+# ============================================
+# STEP 4: Create the email notifications file
+# ============================================
+cat > email_notifications.py << 'EOF'
+# [CONTENT WILL BE INSERTED HERE]
+EOF
+
+# ============================================
+# STEP 5: Create the init service script
+# ============================================
+cat > /etc/init.d/adminmanagement << 'EOF'
+# [CONTENT WILL BE INSERTED HERE]
+EOF
+
+chmod +x /etc/init.d/adminmanagement
+
+# ============================================
+# STEP 6: Configure firewall
+# ============================================
+# Allow access to port 5000
+iptables -I INPUT -p tcp --dport 5000 -j ACCEPT
+
+# Make firewall rule persistent
+uci add firewall rule
+uci set firewall.@rule[-1].name='AdminManagement'
+uci set firewall.@rule[-1].src='lan'
+uci set firewall.@rule[-1].proto='tcp'
+uci set firewall.@rule[-1].dest_port='5000'
+uci set firewall.@rule[-1].target='ACCEPT'
+uci commit firewall
+/etc/init.d/firewall reload
+
+# ============================================
+# STEP 7: Test the system
+# ============================================
+# Start manually for testing
+cd /root/AdminManagementPanel
+python3 simple_main_backend.py
+
+# OR start as service
+/etc/init.d/adminmanagement enable
+/etc/init.d/adminmanagement start
+
+# Check status
+/etc/init.d/adminmanagement status
+
+# ============================================
+# STEP 8: Access the system
+# ============================================
+# Open browser and go to: http://192.168.1.1:5000
+# Default login: admin / admin

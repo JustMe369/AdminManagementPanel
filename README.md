@@ -542,12 +542,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🤝 Support
 
 ### Community Support
-- **Documentation**: [Wiki](https://github.com/JustMe369/AdminManagement/wiki)
-- **Issues**: [GitHub Issues](https://github.com/JustMe369/AdminManagement/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/JustMe369/AdminManagement/discussions)
+- **Documentation**: [Wiki](https://github.com/your-repo/AdminManagement/wiki)
+- **Issues**: [GitHub Issues](https://github.com/your-repo/AdminManagement/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/your-repo/AdminManagement/discussions)
 
 ### Commercial Support
-For enterprise deployments and commercial support, please contact [ahbahaa@investmentgate.net](mailto:ahbahaa@investmentgate.net).
+For enterprise deployments and commercial support, please contact [support@adminmanagement.com](mailto:support@adminmanagement.com).
 
 ## 🙏 Acknowledgments
 

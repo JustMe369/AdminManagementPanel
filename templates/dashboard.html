@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdminManagement - Network Control Center</title>
+    <link rel="stylesheet" href="../static/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-network-wired"></i>
+                    <h2>AdminControl</h2>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="username" id="currentUser">Admin</span>
+                        <span class="role" id="currentRole">Administrator</span>
+                    </div>
+                </div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="menu-item" data-section="devices">
+                    <i class="fas fa-laptop"></i>
+                    <span>Device Management</span>
+                </li>
+                <li class="menu-item" data-section="users">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </li>
+                <li class="menu-item" data-section="firewall">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Firewall Rules</span>
+                </li>
+                <li class="menu-item" data-section="guest">
+                    <i class="fas fa-wifi"></i>
+                    <span>Guest Network</span>
+                </li>
+                <li class="menu-item" data-section="tickets">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Support Tickets</span>
+                </li>
+                <li class="menu-item" data-section="branches">
+                    <i class="fas fa-sitemap"></i>
+                    <span>Branch Management</span>
+                </li>
+                <li class="menu-item" data-section="monitoring">
+                    <i class="fas fa-eye"></i>
+                    <span>Network Monitoring</span>
+                </li>
+                <li class="menu-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title" id="pageTitle">Dashboard Overview</h1>
+                </div>
+                <div class="header-right">
+                    <div class="notifications">
+                        <button class="notification-btn" onclick="toggleNotifications()">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge" id="notificationCount">3</span>
+                        </button>
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="notification-header">
+                                <h3>Notifications</h3>
+                                <button onclick="markAllRead()">Mark all read</button>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <!-- Notifications will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="branch-selector">
+                        <select id="branchSelect" onchange="switchBranch()">
+                            <option value="1">Main Branch</option>
+                        </select>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Content Area -->
+            <div class="content-wrapper">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="content-section active">
+                    <div class="dashboard-cards">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-laptop"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3 id="totalDevices">0</h3>
+                                <p>Total Devices</p>
+                                <span class="stat-change positive">+5 this week</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3 id="activeUsers">0</h3>
+                                <p>Active Users</p>
+                                <span class="stat-change positive">+12 today</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-ticket-alt"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3 id="openTickets">0</h3>
+                                <p>Open Tickets</p>
+                                <span class="stat-change negative">3 urgent</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3 id="networkLoad">45%</h3>
+                                <p>Network Load</p>
+                                <span class="stat-change neutral">Normal</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-charts">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h3>Network Traffic (24h)</h3>
+                                <div class="chart-controls">
+                                    <button class="chart-btn active">24H</button>
+                                    <button class="chart-btn">7D</button>
+                                    <button class="chart-btn">30D</button>
+                                </div>
+                            </div>
+                            <canvas id="trafficChart"></canvas>
+                        </div>
+                        
+                        <div class="recent-activity">
+                            <div class="activity-header">
+                                <h3>Recent Activity</h3>
+                                <button onclick="refreshActivity()">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            <div class="activity-list" id="recentActivity">
+                                <!-- Activity items will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Device Management Section -->
+                <section id="devices-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Device Management</h2>
+                        <div class="section-actions">
+                            <button class="btn-primary" onclick="addDevice()">
+                                <i class="fas fa-plus"></i>
+                                Add Device
+                            </button>
+                            <button class="btn-secondary" onclick="refreshDevices()">
+                                <i class="fas fa-sync-alt"></i>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <div class="table-filters">
+                            <input type="text" id="deviceSearch" placeholder="Search devices..." onkeyup="filterDevices()">
+                            <select id="deviceFilter" onchange="filterDevices()">
+                                <option value="all">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="blocked">Blocked</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                        
+                        <table class="data-table" id="devicesTable">
+                            <thead>
+                                <tr>
+                                    <th>Device Name</th>
+                                    <th>IP Address</th>
+                                    <th>MAC Address</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Last Seen</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="devicesTableBody">
+                                <!-- Device rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- User Management Section -->
+                <section id="users-section" class="content-section">
+                    <div class="section-header">
+                        <h2>User Management</h2>
+                        <div class="section-actions">
+                            <button class="btn-primary" onclick="addUser()">
+                                <i class="fas fa-user-plus"></i>
+                                Add User
+                            </button>
+                            <button class="btn-secondary" onclick="refreshUsers()">
+                                <i class="fas fa-sync-alt"></i>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="data-table" id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>User Type</th>
+                                    <th>Branch</th>
+                                    <th>Status</th>
+                                    <th>Last Login</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- User rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- Guest Network Section -->
+                <section id="guest-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Guest Network Management</h2>
+                        <div class="section-actions">
+                            <button class="btn-primary" onclick="generateGuestPassword()">
+                                <i class="fas fa-key"></i>
+                                Generate Password
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="guest-controls">
+                        <div class="guest-card">
+                            <h3>Active Guest Passwords</h3>
+                            <div class="password-list" id="guestPasswordList">
+                                <!-- Guest passwords will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="guest-card">
+                            <h3>Quick Generate</h3>
+                            <form id="guestPasswordForm" onsubmit="createGuestPassword(event)">
+                                <div class="form-group">
+                                    <label>Time Limit (minutes)</label>
+                                    <input type="number" id="guestTimeLimit" value="60" min="15" max="1440">
+                                </div>
+                                <div class="form-group">
+                                    <label>Speed Limit (Mbps)</label>
+                                    <input type="number" id="guestSpeedLimit" value="5" min="1" max="100">
+                                </div>
+                                <div class="form-group">
+                                    <label>Max Usage Count</label>
+                                    <input type="number" id="guestMaxUsage" value="1" min="1" max="50">
+                                </div>
+                                <button type="submit" class="btn-primary">Create Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Support Tickets Section -->
+                <section id="tickets-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Support Tickets</h2>
+                        <div class="section-actions">
+                            <button class="btn-primary" onclick="createTicket()">
+                                <i class="fas fa-plus"></i>
+                                New Ticket
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="tickets-overview">
+                        <div class="ticket-stats">
+                            <div class="ticket-stat">
+                                <span class="stat-number" id="openTicketsCount">0</span>
+                                <span class="stat-label">Open</span>
+                            </div>
+                            <div class="ticket-stat">
+                                <span class="stat-number" id="inProgressTicketsCount">0</span>
+                                <span class="stat-label">In Progress</span>
+                            </div>
+                            <div class="ticket-stat">
+                                <span class="stat-number" id="resolvedTicketsCount">0</span>
+                                <span class="stat-label">Resolved</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="data-table" id="ticketsTable">
+                            <thead>
+                                <tr>
+                                    <th>Ticket #</th>
+                                    <th>Title</th>
+                                    <th>Reporter</th>
+                                    <th>Category</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ticketsTableBody">
+                                <!-- Ticket rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modals -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Modal Title</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Modal content will be dynamically populated -->
+            </div>
+        </div>
+    </div>
+    
+    <script src="../static/js/dashboard.js"></script>
+    <script src="../static/js/api.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>
