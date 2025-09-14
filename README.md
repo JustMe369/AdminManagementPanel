@@ -94,7 +94,7 @@ collectd vnstat iftop htop
 
 1. **Download the installer script:**
    ```bash
-   wget https://raw.githubusercontent.com/your-repo/AdminManagement/main/install_router.sh
+   wget https://raw.githubusercontent.com/JustMe369/AdminManagement/main/install_router.sh
    chmod +x install_router.sh
    ```
 
@@ -579,4 +579,5 @@ For enterprise deployments and commercial support, please contact [support@admin
 ---
 
 **AdminManagement System** - Professional IT Support and Network Management Platform  
-Built with ❤️ for the OpenWrt and IT community
+
+Built with ❤️ JustMe369 ❤️ for the OpenWrt and IT community ...
